@@ -16,7 +16,7 @@ app.use(
     origin: [
       "http://localhost:3000",
       "http://localhost:3001",
-      "https://your-frontend.vercel.app",
+      "https://zerodha-clone-zabe.vercel.app/",
       "https://your-dashboard.vercel.app"
     ],
     credentials: true,

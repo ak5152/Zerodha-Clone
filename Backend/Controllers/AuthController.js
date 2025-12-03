@@ -20,12 +20,14 @@ module.exports.Signup = async (req, res, next) => {
     const user = await User.create({ email, password, username, createdAt });
 
     const token = createSecretToken(user._id);
-    res.cookie("token", token, {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: false, // true only in HTTPS
-    });
 
+    // IMPORTANT: Secure cookies for Render + Vercel
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000
+    });
 
     res.status(201).json({
       message: "User signed in successfully",
@@ -59,10 +61,13 @@ module.exports.Login = async (req, res, next) => {
     }
 
     const token = createSecretToken(user._id);
+
+    // IMPORTANT: Secure cookies for Render + Vercel
     res.cookie("token", token, {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: false, // true only in HTTPS
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000
     });
 
     res.status(201).json({
@@ -87,8 +92,7 @@ module.exports.userVerification = async (req, res) => {
     jwt.verify(token, process.env.TOKEN_KEY, async (err, decoded) => {
       if (err) return res.json({ status: false });
 
-      const user = await User.findById(decoded.id).select("-password"); 
-      // 👆 this hides the password field
+      const user = await User.findById(decoded.id).select("-password");
 
       if (!user) return res.json({ status: false });
 
