@@ -10,16 +10,22 @@ const AppWrapper = () => {
 
   useEffect(() => {
     axios
-      .post("http://localhost:3002/verify", {}, { withCredentials: true })
+      .post(
+        "https://zerodha-clone-we1s.onrender.com/verify",
+        {},
+        { withCredentials: true }
+      )
       .then((res) => {
         if (res.data.status) {
           setVerified(true);
         } else {
-          window.location.href = "http://localhost:3000/login";
+          window.location.href =
+            "https://zerodha-clone-g3rs.vercel.app/login";
         }
       })
       .catch(() => {
-        window.location.href = "http://localhost:3000/login";
+        window.location.href =
+          "https://zerodha-clone-g3rs.vercel.app/login";
       });
   }, []);
 
