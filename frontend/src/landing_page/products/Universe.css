@@ -1,0 +1,5 @@
+.partner-img {
+  width: 120px;      /* same width as the smallcase logo */
+  height: auto;      /* keep original aspect ratio */
+  object-fit: contain;
+}
