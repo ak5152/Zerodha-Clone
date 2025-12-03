@@ -1,48 +1,46 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./index.css";
 import Home from "./components/Home";
 
-const AppWrapper = () => {
-  const [verified, setVerified] = useState(null);
+function AppWrapper() {
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    axios
-      .post(
-        "https://zerodha-clone-we1s.onrender.com/verify",
-        {},
-        { withCredentials: true }
-      )
-      .then((res) => {
-        if (res.data.status) {
-          setVerified(true);
-        } else {
-          window.location.href =
-            "https://zerodha-clone-g3rs.vercel.app/login";
-        }
-      })
-      .catch(() => {
-        window.location.href =
-          "https://zerodha-clone-g3rs.vercel.app/login";
-      });
+    axios.post(
+      "https://zerodha-clone-we1s.onrender.com/verify",
+      {},
+      { withCredentials: true }
+    )
+    .then(res => {
+      if (res.data.status) {
+        setLoading(false); // show dashboard
+      } else {
+        window.location.href = "https://zerodha-clone-g3rs.vercel.app/login";
+      }
+    })
+    .catch(() => {
+      window.location.href = "https://zerodha-clone-g3rs.vercel.app/login";
+    });
   }, []);
 
-  if (verified === null) return <div>Loading...</div>;
+  if (loading) return <h3>Loading...</h3>;
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/*" element={<Home />} />
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/*" element={<Home />} />
+    </Routes>
   );
-};
+}
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <AppWrapper />
+    <BrowserRouter>
+      <AppWrapper />
+    </BrowserRouter>
   </React.StrictMode>
 );
