@@ -1,7 +1,6 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 
-import Navbar from "./Navbar";          // ⭐ ADD THIS
 import Apps from "./Apps";
 import Funds from "./Funds";
 import Holdings from "./Holdings";
@@ -13,27 +12,22 @@ import { GeneralContextProvider } from "./GeneralContext";
 
 const Dashboard = () => {
   return (
-    <>
-      {/* ⭐ NAVBAR MUST BE OUTSIDE MAIN CONTENT */}
-      <Navbar />
+    <div className="dashboard-container">
+      <GeneralContextProvider>
+        <WatchList />
+      </GeneralContextProvider>
 
-      <div className="dashboard-container">
-        <GeneralContextProvider>
-          <WatchList />
-        </GeneralContextProvider>
-
-        <div className="content">
-          <Routes>
-            <Route exact path="/" element={<Summary />} />
-            <Route path="/orders" element={<Orders />} />
-            <Route path="/holdings" element={<Holdings />} />
-            <Route path="/positions" element={<Positions />} />
-            <Route path="/funds" element={<Funds />} />
-            <Route path="/apps" element={<Apps />} />
-          </Routes>
-        </div>
+      <div className="content">
+        <Routes>
+          <Route exact path="/" element={<Summary />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/holdings" element={<Holdings />} />
+          <Route path="/positions" element={<Positions />} />
+          <Route path="/funds" element={<Funds />} />
+          <Route path="/apps" element={<Apps />} />
+        </Routes>
       </div>
-    </>
+    </div>
   );
 };
 

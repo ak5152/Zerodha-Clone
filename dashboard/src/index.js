@@ -5,9 +5,14 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import axios from "axios";
 
 import "./index.css";
-import Dashboard from "./components/Dashboard";
-import Navbar from "./components/Navbar";   // ⭐ ADD THIS
 
+// ⭐ IMPORTANT: YOUR DASHBOARD NAVBAR IS TopBar + Menu
+import TopBar from "./components/TopBar";
+import Menu from "./components/Menu";
+
+import Dashboard from "./components/Dashboard";
+
+// 🔹 axios settings (must come AFTER import axios)
 axios.defaults.withCredentials = true;
 
 const AppWrapper = () => {
@@ -41,16 +46,14 @@ const AppWrapper = () => {
 
   return (
     <BrowserRouter>
+
+      {/* ⭐ ALWAYS SHOW NAVBAR BEFORE DASHBOARD */}
+      <TopBar />
+      <Menu />
+
       <Routes>
-        <Route
-          path="/*"
-          element={
-            <>
-              <Navbar />        {/* ⭐ FIXED */}
-              <Dashboard />
-            </>
-          }
-        />
+        {/* All dashboard pages will load inside Dashboard component */}
+        <Route path="/*" element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
   );
