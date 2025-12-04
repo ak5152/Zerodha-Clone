@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 
+axios.defaults.withCredentials = true;   // VERY IMPORTANT
+
 const Signup = () => {
   const navigate = useNavigate();
   const [inputValue, setInputValue] = useState({
@@ -22,30 +24,40 @@ const Signup = () => {
     toast.error(err, { position: "bottom-left" });
 
   const handleSuccess = (msg) =>
-    toast.success(msg, { position: "bottom-right" });
+    toast.success(msg, { position: "bottom-left" });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!email || !username || !password) {
+      return handleError("All fields are required");
+    }
+
     try {
-      const { data } = await axios.post
-      ("https://zerodha-clone-we1s.onrender.com/signup",
-        { ...inputValue },
-        { withCredentials: true }
+      const { data } = await axios.post(
+        "https://zerodha-clone-we1s.onrender.com/signup",
+        inputValue
       );
 
-      console.log("Signup response:", data);   // 👈 ADD THIS LINE
+      console.log("Signup response:", data);
 
-      const { success, message } = data;
-      if (success) {
-        handleSuccess(message);
+      const { status, message } = data;
+
+      if (status) {
+        handleSuccess("Signup successful!");
+
         setTimeout(() => {
-          window.location.href = "http://localhost:3001/";
+          // Redirect to deployed dashboard — NOT localhost
+          window.location.href = "https://zerodha-clone-g3rs.vercel.app/";
         }, 1000);
+
       } else {
-        handleError(message);
+        handleError(message || "Signup failed");
       }
+
     } catch (error) {
       console.log(error);
+      handleError("Server error");
     }
 
     setInputValue({ email: "", password: "", username: "" });

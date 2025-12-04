@@ -3,13 +3,17 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 
+axios.defaults.withCredentials = true;  // VERY IMPORTANT
+
 const Login = () => {
   const navigate = useNavigate();
   const [inputValue, setInputValue] = useState({
     email: "",
     password: "",
   });
+
   const { email, password } = inputValue;
+
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     setInputValue({
@@ -22,6 +26,7 @@ const Login = () => {
     toast.error(err, {
       position: "bottom-left",
     });
+
   const handleSuccess = (msg) =>
     toast.success(msg, {
       position: "bottom-left",
@@ -29,31 +34,35 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const { data } = await axios.post(
         "https://zerodha-clone-we1s.onrender.com/login",
-
-        {
-          ...inputValue,
-        },
-        { withCredentials: true }
+        inputValue
       );
-      console.log(data);
-      const { success, message } = data;
-      if (success) {
-        handleSuccess(message);
-        setTimeout(() => {
-          window.location.href = "http://localhost:3001/";
 
+      console.log(data);
+
+      const { status, user, message } = data;
+
+      if (status) {
+        handleSuccess("Login successful!");
+
+        // Redirect to the deployed dashboard — not localhost
+        setTimeout(() => {
+          window.location.href = "https://zerodha-clone-g3rs.vercel.app/";
         }, 1000);
+
       } else {
-        handleError(message);
+        handleError(message || "Login failed");
       }
+
     } catch (error) {
       console.log(error);
+      handleError("Server error");
     }
+
     setInputValue({
-      ...inputValue,
       email: "",
       password: "",
     });
@@ -62,9 +71,10 @@ const Login = () => {
   return (
     <div className="form_container">
       <h2>Login Account</h2>
+
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="email">Email</label>
+          <label>Email</label>
           <input
             type="email"
             name="email"
@@ -73,8 +83,9 @@ const Login = () => {
             onChange={handleOnChange}
           />
         </div>
+
         <div>
-          <label htmlFor="password">Password</label>
+          <label>Password</label>
           <input
             type="password"
             name="password"
@@ -83,11 +94,14 @@ const Login = () => {
             onChange={handleOnChange}
           />
         </div>
+
         <button type="submit">Submit</button>
+
         <span>
-          Already have an account? <Link to={"/signup"}>Signup</Link>
+          Don’t have an account? <Link to="/signup">Signup</Link>
         </span>
       </form>
+
       <ToastContainer />
     </div>
   );

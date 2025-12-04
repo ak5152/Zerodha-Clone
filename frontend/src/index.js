@@ -2,6 +2,10 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./index.css";
+import axios from "axios";
+
+// GLOBAL — ensures cookies are always included
+axios.defaults.withCredentials = true;
 
 import { Signup, Login } from "./pages";
 
@@ -27,7 +31,7 @@ root.render(
       {/* Landing Home */}
       <Route path="/" element={<HomePage />} />
 
-      {/* REAL Signup & Login (from pages folder) */}
+      {/* REAL Signup & Login */}
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
 
