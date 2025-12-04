@@ -22,11 +22,11 @@ module.exports.Signup = async (req, res) => {
     const token = createSecretToken(user._id);
 
     res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-      maxAge: 86400000,
-    });
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  maxAge: 86400000,
+});
 
     res.status(201).json({
       status: true,
@@ -57,11 +57,12 @@ module.exports.Login = async (req, res) => {
     const token = createSecretToken(user._id);
 
     res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-      maxAge: 86400000,
-    });
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  maxAge: 86400000,
+});
+
 
     res.status(201).json({
       status: true,

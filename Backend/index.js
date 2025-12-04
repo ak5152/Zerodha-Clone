@@ -11,14 +11,12 @@ const holdingsRoute = require("./Routes/HoldingsRoute");
 
 const app = express();
 
-// ✅ FIXED CORS -- THIS MUST BE INSIDE app.use(cors(...))
 app.use(
   cors({
     origin: [
       "http://localhost:3000",
       "http://localhost:3001",
-      "https://zerodha-clone-zabe.vercel.app",  // Landing UI
-      "https://zerodha-clone-g3rs.vercel.app",  // Dashboard UI
+      /\.vercel\.app$/  // allow ALL vercel deployments
     ],
     credentials: true,
   })
