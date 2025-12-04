@@ -3,11 +3,21 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 
-axios.defaults.withCredentials = true; // VERY IMPORTANT
+axios.defaults.withCredentials = true;
 
 const Home = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
+
+  // 🌐 FRONTEND URLS
+  const FRONTEND_PROD = "https://zerodha-clone-zabe.vercel.app";
+  const FRONTEND_LOCAL = "http://localhost:3000";
+
+  // When user is NOT logged in → redirect here:
+  const LOGIN_URL =
+    window.location.hostname === "localhost"
+      ? `${FRONTEND_LOCAL}/login`
+      : `${FRONTEND_PROD}/login`;
 
   useEffect(() => {
     const verifyCookie = async () => {
@@ -18,23 +28,30 @@ const Home = () => {
         );
 
         if (!res.data.status) {
-          return navigate("/login");
+          window.location.href = LOGIN_URL;  // ⭐ Correct redirect
+          return;
         }
 
-        setUsername(res.data.user);
-        toast(`Hello ${res.data.user}`, { position: "top-right" });
+        setUsername(res.data.user.username); // ⭐ Correct user name
+        toast(`Hello ${res.data.user.username}`, {
+          position: "top-right",
+        });
 
       } catch (err) {
-        navigate("/login");
+        window.location.href = LOGIN_URL;  // ⭐ Safe fallback
       }
     };
 
     verifyCookie();
-  }, [navigate]);
+  }, []);
 
   const Logout = async () => {
-    await axios.post("https://zerodha-clone-we1s.onrender.com/logout", {});
-    navigate("/login");
+    try {
+      await axios.post("https://zerodha-clone-we1s.onrender.com/logout");
+    } catch (err) {
+      console.log("Logout error", err);
+    }
+    window.location.href = LOGIN_URL;
   };
 
   return (

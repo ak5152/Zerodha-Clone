@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 
-axios.defaults.withCredentials = true;  // VERY IMPORTANT
+axios.defaults.withCredentials = true;
 
 const Login = () => {
-  const navigate = useNavigate();
   const [inputValue, setInputValue] = useState({
     email: "",
     password: "",
@@ -23,17 +22,22 @@ const Login = () => {
   };
 
   const handleError = (err) =>
-    toast.error(err, {
-      position: "bottom-left",
-    });
+    toast.error(err, { position: "bottom-left" });
 
   const handleSuccess = (msg) =>
-    toast.success(msg, {
-      position: "bottom-left",
-    });
+    toast.success(msg, { position: "bottom-left" });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // 🌐 URLs for dashboard
+    const DASHBOARD_PROD = "https://zerodha-clone-g3rs.vercel.app";
+    const DASHBOARD_LOCAL = "http://localhost:3001"; // dashboard runs on next port after 3000
+
+    const DASHBOARD_URL =
+      window.location.hostname === "localhost"
+        ? DASHBOARD_LOCAL
+        : DASHBOARD_PROD;
 
     try {
       const { data } = await axios.post(
@@ -43,14 +47,13 @@ const Login = () => {
 
       console.log(data);
 
-      const { status, user, message } = data;
+      const { status, message } = data;
 
       if (status) {
         handleSuccess("Login successful!");
 
-        // Redirect to the deployed dashboard — not localhost
         setTimeout(() => {
-          window.location.href = "https://zerodha-clone-g3rs.vercel.app/";
+          window.location.href = DASHBOARD_URL; // ⭐ correct dynamic redirect
         }, 1000);
 
       } else {
@@ -62,10 +65,7 @@ const Login = () => {
       handleError("Server error");
     }
 
-    setInputValue({
-      email: "",
-      password: "",
-    });
+    setInputValue({ email: "", password: "" });
   };
 
   return (

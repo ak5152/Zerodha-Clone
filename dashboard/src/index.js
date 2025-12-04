@@ -1,47 +1,54 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import axios from "axios";
+
+axios.defaults.withCredentials = true;  // ⭐ CRITICAL FIX
+
 import "./index.css";
-import Home from "./components/Home";
+import Dashboard from "./components/Dashboard";
 
-axios.defaults.withCredentials = true;   // 👈 VERY IMPORTANT
+const AppWrapper = () => {
+  const [verified, setVerified] = useState(null);
 
-function AppWrapper() {
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const FRONTEND_PROD = "https://zerodha-clone-zabe.vercel.app";
+  const FRONTEND_LOCAL = "http://localhost:3000";
+
+  const LOGIN_URL =
+    window.location.hostname === "localhost"
+      ? `${FRONTEND_LOCAL}/login`
+      : `${FRONTEND_PROD}/login`;
 
   useEffect(() => {
-    axios.post(
-      "https://zerodha-clone-we1s.onrender.com/verify",
-      {}
-    )
-    .then(res => {
-      if (res.data.status) {
-        setLoading(false); // show dashboard
-      } else {
-        window.location.href = "https://zerodha-clone-g3rs.vercel.app/login";
-      }
-    })
-    .catch(() => {
-      window.location.href = "https://zerodha-clone-g3rs.vercel.app/login";
-    });
+    axios
+      .post(
+        "https://zerodha-clone-we1s.onrender.com/verify",
+        {},
+        { withCredentials: true }
+      )
+      .then((res) => {
+        if (res.data.status) setVerified(true);
+        else window.location.href = LOGIN_URL;
+      })
+      .catch(() => {
+        window.location.href = LOGIN_URL;
+      });
   }, []);
 
-  if (loading) return <h3>Loading...</h3>;
+  if (verified === null) return <div>Loading...</div>;
 
   return (
-    <Routes>
-      <Route path="/*" element={<Home />} />
-    </Routes>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/*" element={<Dashboard />} />
+      </Routes>
+    </BrowserRouter>
   );
-}
+};
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <AppWrapper />
-    </BrowserRouter>
+    <AppWrapper />
   </React.StrictMode>
 );

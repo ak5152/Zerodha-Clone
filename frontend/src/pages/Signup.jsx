@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 
-axios.defaults.withCredentials = true;   // VERY IMPORTANT
+axios.defaults.withCredentials = true;
 
 const Signup = () => {
-  const navigate = useNavigate();
   const [inputValue, setInputValue] = useState({
     email: "",
     password: "",
@@ -47,11 +46,12 @@ const Signup = () => {
         handleSuccess("Signup successful!");
 
         setTimeout(() => {
-          // Redirect to deployed dashboard — NOT localhost
-          window.location.href = "https://zerodha-clone-g3rs.vercel.app/";
+          // ⭐ Correct: redirect to LOGIN page after signup
+          window.location.href = "https://zerodha-clone-zabe.vercel.app/login";
         }, 1000);
-
-      } else {
+      } 
+      
+      else {
         handleError(message || "Signup failed");
       }
 
