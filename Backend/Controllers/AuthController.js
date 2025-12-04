@@ -9,32 +9,42 @@ module.exports.Signup = async (req, res) => {
     const { email, password, username, createdAt } = req.body;
 
     if (!email || !password || !username) {
-      return res.json({ message: "All fields are required" });
+      return res.json({ status: false, message: "All fields are required" });
     }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.json({ message: "User already exists" });
+      return res.json({ status: false, message: "User already exists" });
     }
 
-    const user = await User.create({ email, password, username, createdAt });
+    // ⭐ FAST & SAFE PASSWORD HASHING
+    const hashedPassword = await bcrypt.hash(password, 8);
+
+    const user = await User.create({
+      email,
+      password: hashedPassword,
+      username,
+      createdAt,
+    });
 
     const token = createSecretToken(user._id);
 
     res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,
-  sameSite: "none",
-  maxAge: 86400000,
-});
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 86400000,
+    });
 
-    res.status(201).json({
+    return res.status(201).json({
       status: true,
-      user: user.username
+      message: "Signup successful",
+      user: user.username,
     });
 
   } catch (error) {
     console.error(error);
+    return res.json({ status: false, message: "Server error" });
   }
 };
 
@@ -45,55 +55,57 @@ module.exports.Login = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.json({ message: "All fields are required" });
+      return res.json({ status: false, message: "All fields are required" });
     }
 
     const user = await User.findOne({ email });
-    if (!user) return res.json({ message: "Incorrect password or email" });
+    if (!user) {
+      return res.json({ status: false, message: "Incorrect email or password" });
+    }
 
     const auth = await bcrypt.compare(password, user.password);
-    if (!auth) return res.json({ message: "Incorrect password or email" });
+    if (!auth) {
+      return res.json({ status: false, message: "Incorrect email or password" });
+    }
 
     const token = createSecretToken(user._id);
 
     res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,
-  sameSite: "none",
-  maxAge: 86400000,
-});
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 86400000,
+    });
 
-
-    res.status(201).json({
+    return res.status(200).json({
       status: true,
-      user: user.username
+      message: "Login successful",
+      user: user.username,
     });
 
   } catch (error) {
     console.error(error);
+    return res.json({ status: false, message: "Server error" });
   }
 };
 
 
 // USER VERIFICATION
-module.exports.userVerification = async (req, res) => {
+module.exports.userVerification = (req, res) => {
   try {
     const token = req.cookies.token;
 
     if (!token) return res.json({ status: false });
 
-    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+    // ⭐ USE THE SAME SECRET USED IN createSecretToken
+    jwt.verify(token, process.env.TOKEN_KEY, (err, decoded) => {
       if (err) return res.json({ status: false });
-
-      const user = await User.findById(decoded.id).select("username");
-      if (!user) return res.json({ status: false });
 
       return res.json({
         status: true,
-        user: user.username
+        user: decoded.id,
       });
     });
-
   } catch (error) {
     console.log(error);
     return res.json({ status: false });
