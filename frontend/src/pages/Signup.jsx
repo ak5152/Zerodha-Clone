@@ -19,15 +19,18 @@ const Signup = () => {
     setInputValue({ ...inputValue, [name]: value });
   };
 
+  const handleError = (err) =>
+    toast.error(err, { position: "bottom-left" });
+
+  const handleSuccess = (msg) =>
+    toast.success(msg, { position: "bottom-left" });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email || !username || !password) {
-      return toast.error("All fields are required");
+      return handleError("All fields are required");
     }
-
-    // ⭐ Show immediate processing toast
-    const id = toast.loading("Creating your account...");
 
     try {
       const { data } = await axios.post(
@@ -40,33 +43,21 @@ const Signup = () => {
       const { status, message } = data;
 
       if (status) {
-        // ⭐ Replace loading toast with success
-        toast.update(id, {
-          render: "Signup successful!",
-          type: "success",
-          isLoading: false,
-          autoClose: 1500,
-        });
+        handleSuccess("Signup successful!");
 
         setTimeout(() => {
-          window.location.href =
-            "https://zerodha-clone-zabe.vercel.app/login";
-        }, 1500);
-      } else {
-        toast.update(id, {
-          render: message || "Signup failed",
-          type: "error",
-          isLoading: false,
-          autoClose: 2000,
-        });
+          // ⭐ Correct: redirect to LOGIN page after signup
+          window.location.href = "https://zerodha-clone-zabe.vercel.app/login";
+        }, 1000);
+      } 
+      
+      else {
+        handleError(message || "Signup failed");
       }
+
     } catch (error) {
-      toast.update(id, {
-        render: "Server error",
-        type: "error",
-        isLoading: false,
-        autoClose: 2000,
-      });
+      console.log(error);
+      handleError("Server error");
     }
 
     setInputValue({ email: "", password: "", username: "" });

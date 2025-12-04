@@ -15,23 +15,29 @@ const Login = () => {
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
-    setInputValue({ ...inputValue, [name]: value });
+    setInputValue({
+      ...inputValue,
+      [name]: value,
+    });
   };
+
+  const handleError = (err) =>
+    toast.error(err, { position: "bottom-left" });
+
+  const handleSuccess = (msg) =>
+    toast.success(msg, { position: "bottom-left" });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Dynamic dashboard route
+    // 🌐 URLs for dashboard
     const DASHBOARD_PROD = "https://zerodha-clone-g3rs.vercel.app";
-    const DASHBOARD_LOCAL = "http://localhost:3001";
+    const DASHBOARD_LOCAL = "http://localhost:3001"; // dashboard runs on next port after 3000
 
     const DASHBOARD_URL =
       window.location.hostname === "localhost"
         ? DASHBOARD_LOCAL
         : DASHBOARD_PROD;
-
-    // ⭐ INSTANT FEEDBACK
-    const id = toast.loading("Logging in...");
 
     try {
       const { data } = await axios.post(
@@ -39,38 +45,24 @@ const Login = () => {
         inputValue
       );
 
-      console.log("Login response:", data);
+      console.log(data);
 
       const { status, message } = data;
 
       if (status) {
-        // ⭐ Replace loading toast with success
-        toast.update(id, {
-          render: "Login successful!",
-          type: "success",
-          isLoading: false,
-          autoClose: 1200,
-        });
+        handleSuccess("Login successful!");
 
         setTimeout(() => {
-          window.location.href = DASHBOARD_URL;
-        }, 1200);
+          window.location.href = DASHBOARD_URL; // ⭐ correct dynamic redirect
+        }, 1000);
+
       } else {
-        toast.update(id, {
-          render: message || "Invalid email or password",
-          type: "error",
-          isLoading: false,
-          autoClose: 2000,
-        });
+        handleError(message || "Login failed");
       }
+
     } catch (error) {
       console.log(error);
-      toast.update(id, {
-        render: "Server error",
-        type: "error",
-        isLoading: false,
-        autoClose: 2000,
-      });
+      handleError("Server error");
     }
 
     setInputValue({ email: "", password: "" });
