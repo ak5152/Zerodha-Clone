@@ -4,7 +4,7 @@ const { createSecretToken } = require("../Utils/SecretToken");
 const bcrypt = require("bcryptjs");
 
 // SIGNUP
-module.exports.Signup = async (req, res, next) => {
+module.exports.Signup = async (req, res) => {
   try {
     const { email, password, username, createdAt } = req.body;
 
@@ -21,18 +21,16 @@ module.exports.Signup = async (req, res, next) => {
 
     const token = createSecretToken(user._id);
 
-    // IMPORTANT: Secure cookies for Render + Vercel
     res.cookie("token", token, {
       httpOnly: true,
       sameSite: "none",
       secure: true,
-      maxAge: 24 * 60 * 60 * 1000
+      maxAge: 86400000,
     });
 
     res.status(201).json({
-      message: "User signed in successfully",
-      success: true,
-      user
+      status: true,
+      user: user.username
     });
 
   } catch (error) {
@@ -41,8 +39,8 @@ module.exports.Signup = async (req, res, next) => {
 };
 
 
-// LOGIN  
-module.exports.Login = async (req, res, next) => {
+// LOGIN
+module.exports.Login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -51,28 +49,23 @@ module.exports.Login = async (req, res, next) => {
     }
 
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.json({ message: "Incorrect password or email" });
-    }
+    if (!user) return res.json({ message: "Incorrect password or email" });
 
     const auth = await bcrypt.compare(password, user.password);
-    if (!auth) {
-      return res.json({ message: "Incorrect password or email" });
-    }
+    if (!auth) return res.json({ message: "Incorrect password or email" });
 
     const token = createSecretToken(user._id);
 
-    // IMPORTANT: Secure cookies for Render + Vercel
     res.cookie("token", token, {
       httpOnly: true,
       sameSite: "none",
       secure: true,
-      maxAge: 24 * 60 * 60 * 1000
+      maxAge: 86400000,
     });
 
     res.status(201).json({
-      message: "User logged in successfully",
-      success: true
+      status: true,
+      user: user.username
     });
 
   } catch (error) {
@@ -80,23 +73,24 @@ module.exports.Login = async (req, res, next) => {
   }
 };
 
+
 // USER VERIFICATION
 module.exports.userVerification = async (req, res) => {
   try {
     const token = req.cookies.token;
 
-    if (!token) {
-      return res.json({ status: false });
-    }
+    if (!token) return res.json({ status: false });
 
-    jwt.verify(token, process.env.TOKEN_KEY, async (err, decoded) => {
+    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
       if (err) return res.json({ status: false });
 
-      const user = await User.findById(decoded.id).select("-password");
-
+      const user = await User.findById(decoded.id).select("username");
       if (!user) return res.json({ status: false });
 
-      return res.json({ status: true, user });
+      return res.json({
+        status: true,
+        user: user.username
+      });
     });
 
   } catch (error) {
