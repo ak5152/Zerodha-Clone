@@ -2,14 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./index.css";
-import axios from "axios";
-
-// GLOBAL — ensures cookies are always included
-axios.defaults.withCredentials = true;
 
 import { Signup, Login } from "./pages";
-
-import "react-toastify/dist/ReactToastify.css";
 
 import HomePage from "./landing_page/home/HomePage";
 import AboutPage from "./landing_page/about/AboutPage";
@@ -24,27 +18,25 @@ import NotFound from "./landing_page/NotFound";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
-  <BrowserRouter>
-    <Navbar />
+  <React.StrictMode>
+    <BrowserRouter>
+      <Navbar />
 
-    <Routes>
-      {/* Landing Home */}
-      <Route path="/" element={<HomePage />} />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
 
-      {/* REAL Signup & Login */}
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/login" element={<Login />} />
+        {/* Landing pages */}
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/product" element={<ProductPage />} />
+        <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/support" element={<SupportPage />} />
 
-      {/* Landing pages */}
-      <Route path="/about" element={<AboutPage />} />
-      <Route path="/product" element={<ProductPage />} />
-      <Route path="/pricing" element={<PricingPage />} />
-      <Route path="/support" element={<SupportPage />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
 
-      {/* 404 */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-
-    <Footer />
-  </BrowserRouter>
+      <Footer />
+    </BrowserRouter>
+  </React.StrictMode>
 );
