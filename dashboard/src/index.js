@@ -1,12 +1,14 @@
+// 🔹 ALL IMPORTS MUST BE AT THE VERY TOP
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import axios from "axios";
 
-axios.defaults.withCredentials = true;  // ⭐ CRITICAL FIX
-
 import "./index.css";
 import Dashboard from "./components/Dashboard";
+
+// 🔹 axios settings (must come AFTER import axios)
+axios.defaults.withCredentials = true;
 
 const AppWrapper = () => {
   const [verified, setVerified] = useState(null);
