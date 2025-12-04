@@ -27,8 +27,8 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(
-        "http://localhost:3002/signup",
+      const { data } = await axios.post
+      ("https://zerodha-clone-we1s.onrender.com/signup",
         { ...inputValue },
         { withCredentials: true }
       );
