@@ -5,6 +5,8 @@ import axios from "axios";
 import "./index.css";
 import Home from "./components/Home";
 
+axios.defaults.withCredentials = true;   // 👈 VERY IMPORTANT
+
 function AppWrapper() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -12,8 +14,7 @@ function AppWrapper() {
   useEffect(() => {
     axios.post(
       "https://zerodha-clone-we1s.onrender.com/verify",
-      {},
-      { withCredentials: true }
+      {}
     )
     .then(res => {
       if (res.data.status) {
