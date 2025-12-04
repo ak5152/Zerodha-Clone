@@ -6,8 +6,8 @@ import axios from "axios";
 
 import "./index.css";
 import Dashboard from "./components/Dashboard";
+import Navbar from "./components/Navbar";   // ⭐ ADD THIS
 
-// 🔹 axios settings (must come AFTER import axios)
 axios.defaults.withCredentials = true;
 
 const AppWrapper = () => {
@@ -42,7 +42,15 @@ const AppWrapper = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/*" element={<Dashboard />} />
+        <Route
+          path="/*"
+          element={
+            <>
+              <Navbar />        {/* ⭐ FIXED */}
+              <Dashboard />
+            </>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
